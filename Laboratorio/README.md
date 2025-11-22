@@ -60,8 +60,8 @@ EOF
 sudo apt update
 
 # Install Docker Desktop package
-sudo apt-get update
-sudo apt-get install ./docker-desktop-amd64.deb
+sudo apt update
+sudo apt install ./docker-desktop-amd64.deb
 ```
 
 **Ojo cuidado**: Puede que existan problemas de virtualización al abrir el Desktop, tienes que revisar la configuración de KVM (puede que incluso tengas que acceder a la BIOS de la máquina si no estás con alguna máquina virtual)
@@ -174,3 +174,19 @@ Pues vamos allá, **ahora con contenedores**.
 - Mapea el volumen para persistencia de datos
 - Define claramente las variables de entorno para cada servicio
 - Documenta los comandos útiles (up, down, logs, etc.)
+
+Apartado personal para ver que implementar aquí:
+- Podemos meter un nginx que actue como un proxy inverso para montar los 2 stacks a la vez.
+- Como hacer peticiones al back: Curl, Postman, directamente con consultas en mongo.
+- Me gustaría utilizar Tableplus.
+- ¿Donde están las variables de entorno en el back de .net?
+- Prueba a mapear los mismos puertos en el front y en el back y explica porque puedes hacerlo funcionar.
+- Estaría bien crear unos scripts de copia de bases de datos, back ups, esto solo por la ciencia.
+- ¿Utilizamos mongo express?
+- Utiliza la propiedad "healthcheck" con el compose para ver como funciona.
+- Averigua como crear seeders en base de datos.
+- Averigua donde guarda un contenedor MongoDB la información de la bd.
+- Levanta dev container para el stack de .net.
+- El contenedor de  dotnet: 
+  - https://hub.docker.com/r/microsoft/dotnet-sdk
+  - https://mcr.microsoft.com/en-us/artifact/mar/dotnet/sdk/tag/8.0-alpine
