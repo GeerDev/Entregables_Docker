@@ -26,8 +26,12 @@ Está compuesta de tres componentes principales:
 1. ✅ Crear una red Docker para la comunicación
 ```bash
 docker network create lemoncode-network
+docker network ls
 ```
-2. ✅ Ejecutar MongoDB en un contenedor con persistencia de datos
+
+![Nueva_red_docker_lemoncode_network](./images/nueva_red_lemoncode_network.png)
+
+1. ✅ Ejecutar MongoDB en un contenedor con persistencia de datos
 ```bash
 docker run -d \
   --name mongodb \
@@ -36,18 +40,31 @@ docker run -d \
   -e MONGO_INITDB_ROOT_USERNAME=admin \
   -e MONGO_INITDB_ROOT_PASSWORD=admin123 \
   -v mongo-data:/data/db \
-  mongo:7
+  mongo:8.0
 ```
-3. ✅ Ejecutar el backend localmente conectándose a tu nuevo MongoDB
+
+![Contenedor_MongoDB_corriendo](./images/contenedor_mongodb_corriendo.png)
+
+1. ✅ Ejecutar el backend localmente conectándose a tu nuevo MongoDB
 ```bash
-cd node-stack/backend
+cd Laboratorio/node-stack/backend
 npm install
-DATABASE_URL="mongodb://admin:admin123@localhost:27017" PORT=5000 npm start
+
+# Creado archivo ".env" para llamar correctamente a base de datos y asignandole un puerto al back, evidentemente esto no se debería subir al repo pero vaya es una práctica no voy a exponer mi API key de Claude Code. 
+npm start
 ```
+
+![Back_funcionando](./images/back_funcionando.png)
+
 4. ✅ Verificar que el CRUD funciona correctamente usando la extensión REST Client y el archivo `backend/client.http` del stack que hayas elegido
-   
+
+![Peticiones_Http_correctas](./images/peticiones_http_correctas.png)
+
 5. ✨ Puedes instalar la extensión de [MongoDB for VS Code](https://marketplace.visualstudio.com/items?itemName=mongodb.mongodb-vscode) o usar MongoDB Compass para verificar que los datos se almacenan correctamente.
 
+Por cambiar un poco, voy a probar "Tableplus" que tenia para darle una oportunidad:
+
+![Comprobación_en_MongoDB](./images/comprobacion_en_mongodb.png)
 
 ¡Perfecto! Si has llegado hasta aquí, ya tienes MongoDB corriendo en un contenedor y tu backend puede comunicarse con él. ¡Buen trabajo! 🎉
 
