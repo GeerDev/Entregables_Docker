@@ -78,6 +78,7 @@ Por cambiar un poco, voy a probar "TablePlus" que tenia para darle una oportunid
 
 #### 📋 Requisitos:
 1. ✅ Crear un Dockerfile para el backend (para .NET para o Node.js)
+
 También se ha creado el archivo ".dockerignore"
 ![Dockerfile_back_node](./images/dockerfile_back_node.png)
 
@@ -130,10 +131,35 @@ docker logs topics-api
 
 #### 📋 Requisitos:
 1. ✅ Crear un Dockerfile para el frontend
+
+También se ha creado el archivo ".dockerignore"
+![Dockerfile_front](./images/Dockerfile_front.png)
+
+
 2. ✅ Construir la imagen del frontend
+```bash
+docker build -t lemoncode-frontend ./Laboratorio/node-stack/frontend
+```
+
 3. ✅ Ejecutar el frontend en un contenedor en la red Docker
+```bash
+docker run -d \
+  --name lemoncode-frontend \
+  --network lemoncode-network \
+  -p 3000:3000 \
+  --env-file ./Laboratorio/node-stack/frontend/.env.docker \
+  lemoncode-frontend
+```
+
+![Contenedor_front_corriendo](./images/Contenedor_front_corriendo.png)
+
 4. ✅ Configurar las variables de entorno para conectarse al backend en `http://topics-api:5001/api/classes`
+
+Ya están configuradas en el archivo ".env.docker" que es el que se utiliza cuando se construye el contenedor.
+
 5. ✅ Acceder a la interfaz desde el navegador en el puerto 3000
+
+![Front_accesible_en_3000](./images/Front_en_el_puerto_3000.png)
 
 #### 💡 Tips:
 - El frontend debe ser accesible desde http://localhost:3000
@@ -151,7 +177,7 @@ docker logs topics-api
 2. ✅ Configurar la red compartida `lemoncode-network`
 3. ✅ Definir volumen para persistencia de MongoDB
 4. ✅ Establecer todas las variables de entorno necesarias
-5. ✅ Exponer los puertos correctos (3000 para frontend, 5000 para API, 27017 para MongoDB)
+5. ✅ Exponer los puertos correctos (3000 para frontend, 5001 para API, 27017 para MongoDB)
 6. ✅ Definir dependencias entre servicios
 7. ✅ Levantar toda la aplicación con un único comando
 8. ✅ Acceder a la aplicación desde el navegador en http://localhost:3000 
@@ -161,6 +187,14 @@ docker logs topics-api
 - Mapea el volumen para persistencia de datos
 - Define claramente las variables de entorno para cada servicio
 - Documenta los comandos útiles (up, down, logs, etc.)
+
+**Nota 1**: Nunca subiría archivos con variables de entorno a ningún sitio, solo las he dejado en este repositorio con fines educativos. 
+**Nota 2**: He intentando a veces mostrar comandos por consola y otras veces directamente imágenes de Docker Desktop para que hubiera un poco de todo.
+
+**Nota 3**: Si haber entregado estos ejercicios significa ya no volver a asistir a tus clases Gis, entonces haz como que no he entregado nada
+
+![Meme_MenInBlack](./memes/forget-never-happened.gif)
+
 
 Apartado personal para ver que implementar aquí:
 - Podemos meter un nginx que actue como un proxy inverso para montar los 2 stacks a la vez.
