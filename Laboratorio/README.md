@@ -50,7 +50,9 @@ docker run -d \
 cd Laboratorio/node-stack/backend
 npm install
 
-# Creado archivo ".env" para llamar correctamente a base de datos y asignandole un puerto al back, evidentemente esto no se debería subir al repo pero vaya es una práctica no voy a exponer mi API key de Claude Code. 
+# Creado archivo ".env" para llamar correctamente a base de datos y asignandole un puerto al back, 
+# evidentemente esto no se debería subir al repo pero vaya es una práctica no voy a exponer mi 
+# API key de Claude Code. 
 npm start
 ```
 
@@ -62,7 +64,7 @@ npm start
 
 5. ✨ Puedes instalar la extensión de [MongoDB for VS Code](https://marketplace.visualstudio.com/items?itemName=mongodb.mongodb-vscode) o usar MongoDB Compass para verificar que los datos se almacenan correctamente.
 
-Por cambiar un poco, voy a probar "Tableplus" que tenia para darle una oportunidad:
+Por cambiar un poco, voy a probar "TablePlus" que tenia para darle una oportunidad:
 
 ![Comprobación_en_MongoDB](./images/comprobacion_en_mongodb.png)
 
@@ -76,15 +78,49 @@ Por cambiar un poco, voy a probar "Tableplus" que tenia para darle una oportunid
 
 #### 📋 Requisitos:
 1. ✅ Crear un Dockerfile para el backend (para .NET para o Node.js)
+También se ha creado el archivo ".dockerignore"
+![Dockerfile_back_node](./images/dockerfile_back_node.png)
+
 2. ✅ Construir la imagen del backend
+```bash
+docker build -t topics-api ./Laboratorio/node-stack/backend
+```
+
+![Imagen_construida_backend_node](./images/imagen_construida_backend_node.png)
+
 3. ✅ Ejecutar el backend en un contenedor en la red Docker que creaste en el Reto 1
+```bash
+docker run -d \
+  --name topics-api \
+  --network lemoncode-network \
+  -p 5001:5001 \
+  --env-file ./Laboratorio/node-stack/backend/.env.docker \
+  topics-api
+```
+
+![Imagen_node_backend_funcionando](./images/imagen_node_backend_funcionando.png)
+
 4. ✅ Verificar que se conecta correctamente a MongoDB
-5. ✅ Exponerse el puerto 5000 para que sea accesible
+```bash
+docker network inspect lemoncode-network
+```
+
+![Inspeccionando_red_backend](./images/inspeccionando_red_backend.png)
+
+```bash
+docker logs topics-api
+```
+
+![Conexión_correcta_con_basededatos](./images/conexion_correcta_con_basededatos.png)
+
+5. ✅ Exponerse el puerto 5001 para que sea accesible
+
+![Puerto_5001_accesible](./images/puerto_5001_accesible.png)
 
 #### 💡 Tips:
 - Define variables de entorno adecuadas para la conexión a MongoDB
 - Asegúrate de que la imagen sea lo más eficiente posible
-- Usa puertos correctos (5000 para la API)
+- Usa puertos correctos (5001 para la API)
 
 ---
 
@@ -96,7 +132,7 @@ Por cambiar un poco, voy a probar "Tableplus" que tenia para darle una oportunid
 1. ✅ Crear un Dockerfile para el frontend
 2. ✅ Construir la imagen del frontend
 3. ✅ Ejecutar el frontend en un contenedor en la red Docker
-4. ✅ Configurar las variables de entorno para conectarse al backend en `http://topics-api:5000/api/classes`
+4. ✅ Configurar las variables de entorno para conectarse al backend en `http://topics-api:5001/api/classes`
 5. ✅ Acceder a la interfaz desde el navegador en el puerto 3000
 
 #### 💡 Tips:
