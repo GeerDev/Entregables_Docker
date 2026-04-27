@@ -18,102 +18,36 @@ Está compuesta de tres componentes principales:
 
 ---
 
-### 🙈 Antes de empezar
-
-Por causas del destino tengo que realizar el laboratorio en un Ubuntu 24 recien formateado.
-
-Así que como quiero probar las diferentes partes del aplicativo en mi local, voy a instalar:
-- `nvm` para utilizar la versión que quiera de Nodejs.
-
-```bash
-# Descarga e instala nvm:
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
-# En lugar de reiniciar la shell
-\. "$HOME/.nvm/nvm.sh"
-# Descarga e instala Node.js:
-nvm install 24
-# Verifica la versión de Node.js:
-node -v
-# Verifica versión de npm:
-npm -v
-```
-
-- `docker desktop` para utilizar Docker, aunque hubiera podido instalar las dependencias de docker simplemente y no utilizar desktop pero prefiero tener un interfaz que me ofrezca más info mientras esté aprendiendo.
-
-```bash
-# Add Docker's official GPG key:
-sudo apt update
-sudo apt install ca-certificates curl
-sudo install -m 0755 -d /etc/apt/keyrings
-sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
-sudo chmod a+r /etc/apt/keyrings/docker.asc
-
-# Add the repository to Apt sources:
-sudo tee /etc/apt/sources.list.d/docker.sources <<EOF
-Types: deb
-URIs: https://download.docker.com/linux/ubuntu
-Suites: $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}")
-Components: stable
-Signed-By: /etc/apt/keyrings/docker.asc
-EOF
-
-sudo apt update
-
-# Install Docker Desktop package
-sudo apt update
-sudo apt install ./docker-desktop-amd64.deb
-```
-
-**Ojo cuidado**: Puede que existan problemas de virtualización al abrir el Desktop, tienes que revisar la configuración de KVM (puede que incluso tengas que acceder a la BIOS de la máquina si no estás con alguna máquina virtual)
-
-- `mongoDB` para poder levantar en mi local la base de datos, además aquí creamos un admin para un mínimo de seguridad.
-
-```bash
-curl -fsSL https://www.mongodb.org/static/pgp/server-8.0.asc | sudo gpg -o /usr/share/keyrings/mongodb-server-8.0.gpg --dearmor
-echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/8.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-8.0.list
-sudo apt update
-sudo apt install -y mongodb-org
-sudo systemctl start mongod
-mongosh "mongodb://localhost:27017"
-
-# Seguridad
-sudo vi /etc/mongod.conf # Aquí ponermos security: authorization: "enabled"
-sudo systemctl restart mongod
-# Desde la terminal MongoDB
-use admin;
-
-db.createUser({
-	"user": "nraboy",
-	"pwd": "mongodb",
-	"roles": [
-		{
-			"role": "userAdminAnyDatabase",
-			"db": "admin"
-		}
-	]
-});
-
-# Para acceder
-mongosh --host localhost --port 27017 -u nraboy -p --authenticationDatabase admin
-
-```
-
-- `.net` esta parte la voy a levantar usando Dev container así que en mi local no instalaré nada relativo a esto.
-
-Añadiendo las variables de entorno que se necesitan comprobamos que localmente tenemos ready todo:
-
-Pues vamos allá, **ahora con contenedores**.
-
 ### 🔥 Reto 1: MongoDB en Contenedor
 
 **Objetivo**: Ejecutar MongoDB dentro de un contenedor y conectar el backend (ejecutándose localmente) para que pueda recuperar, crear, modificar y eliminar clases de la base de datos.
 
 #### 📋 Requisitos:
 1. ✅ Crear una red Docker para la comunicación
+```bash
+docker network create lemoncode-network
+```
 2. ✅ Ejecutar MongoDB en un contenedor con persistencia de datos
-4. ✅ Ejecutar el backend localmente conectándose a tu nuevo MongoDB
-5. ✅ Verificar que el CRUD funciona correctamente usando la extensión REST Client y el archivo `backend/client.http` del stack que hayas elegido
-6. ✨ Puedes instalar la extensión de [MongoDB for VS Code](https://marketplace.visualstudio.com/items?itemName=mongodb.mongodb-vscode) o usar MongoDB Compass para verificar que los datos se almacenan correctamente
+```bash
+docker run -d \
+  --name mongodb \
+  --network lemoncode-network \
+  -p 27017:27017 \
+  -e MONGO_INITDB_ROOT_USERNAME=admin \
+  -e MONGO_INITDB_ROOT_PASSWORD=admin123 \
+  -v mongo-data:/data/db \
+  mongo:7
+```
+3. ✅ Ejecutar el backend localmente conectándose a tu nuevo MongoDB
+```bash
+cd node-stack/backend
+npm install
+DATABASE_URL="mongodb://admin:admin123@localhost:27017" PORT=5000 npm start
+```
+4. ✅ Verificar que el CRUD funciona correctamente usando la extensión REST Client y el archivo `backend/client.http` del stack que hayas elegido
+   
+5. ✨ Puedes instalar la extensión de [MongoDB for VS Code](https://marketplace.visualstudio.com/items?itemName=mongodb.mongodb-vscode) o usar MongoDB Compass para verificar que los datos se almacenan correctamente.
+
 
 ¡Perfecto! Si has llegado hasta aquí, ya tienes MongoDB corriendo en un contenedor y tu backend puede comunicarse con él. ¡Buen trabajo! 🎉
 
