@@ -239,7 +239,7 @@ Comprobamos que al hacer peticiones a los 2 puertos los back-end están procesan
 
 ![Peticiones_a_dotnet](./images/Peticiones_a_dotnet.png)
 
-Con esto ya tendríamos nuestro stack montado con todos los stacks funcionando.
+Con esto ya tendríamos nuestro sistema montado con todos los stacks funcionando.
 
 **Nota 1**: Nunca subiría archivos con variables de entorno a ningún sitio, solo las he dejado en este repositorio con fines educativos.
 
