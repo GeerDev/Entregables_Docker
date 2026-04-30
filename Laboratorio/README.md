@@ -176,25 +176,48 @@ Ya están configuradas en el archivo ".env.docker" que es el que se utiliza cuan
 1. ✅ Crear un `compose.yml` que incluya los tres servicios
 2. ✅ Configurar la red compartida `lemoncode-network`
 3. ✅ Definir volumen para persistencia de MongoDB
-4. ✅ Establecer todas las variables de entorno necesarias
+4. ✅ Establecer todas las variables de entorno necesarias (Archivo ".env" hermano del "compose.yml")
 5. ✅ Exponer los puertos correctos (3000 para frontend, 5001 para API, 27017 para MongoDB)
 6. ✅ Definir dependencias entre servicios
+
+Consultar el archivo en la ruta `Laboratorio/compose.yml`, esta marcados los puntos resueltos en este fichero.
+
 7. ✅ Levantar toda la aplicación con un único comando
-8. ✅ Acceder a la aplicación desde el navegador en http://localhost:3000 
+
+```bash
+# Levantar todos los servicios en segundo plano
+docker compose up -d
+
+# Ver logs de todos los servicios
+docker compose logs -f
+
+# Parar y eliminar contenedores (conserva volúmenes)
+docker compose down
+
+# Parar, eliminar contenedores y volúmenes
+docker compose down -v
+```
+
+![Docker_compose_laboratorio](./images/docker_compose_laboratorio.png)
+
+1. ✅ Acceder a la aplicación desde el navegador en http://localhost:3000
+
+![Aplicación_levantada_compose](./images/aplicacion_levantada_compose.png)
 
 #### 💡 Tips:
 - Usa `depends_on` para ordenar el inicio de los servicios
+  - mongodb → (healthcheck OK) → topics-api → (started) → lemoncode-frontend
 - Mapea el volumen para persistencia de datos
 - Define claramente las variables de entorno para cada servicio
 - Documenta los comandos útiles (up, down, logs, etc.)
 
-**Nota 1**: Nunca subiría archivos con variables de entorno a ningún sitio, solo las he dejado en este repositorio con fines educativos. 
+**Nota 1**: Nunca subiría archivos con variables de entorno a ningún sitio, solo las he dejado en este repositorio con fines educativos.
+
 **Nota 2**: He intentando a veces mostrar comandos por consola y otras veces directamente imágenes de Docker Desktop para que hubiera un poco de todo.
 
-**Nota 3**: Si haber entregado estos ejercicios significa ya no volver a asistir a tus clases Gis, entonces haz como que no he entregado nada
+**Nota 3**: Si haber entregado estos ejercicios significa ya no volver a asistir a tus clases Gis, entonces haz como que no he entregado nada.
 
 ![Meme_MenInBlack](./memes/forget-never-happened.gif)
-
 
 Apartado personal para ver que implementar aquí:
 - Podemos meter un nginx que actue como un proxy inverso para montar los 2 stacks a la vez.
