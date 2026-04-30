@@ -211,6 +211,36 @@ docker compose down -v
 - Define claramente las variables de entorno para cada servicio
 - Documenta los comandos útiles (up, down, logs, etc.)
 
+### 🎪 Reto Extra: Proxy inverso - Nginx
+
+Vamos a colocar como proxy inverso un contenedor con Nginx para habilitar un único puerto de entrada al sistema y además montar también el stack de .net.
+
+- Se añade el fichero `compose.stack.yml` con todos los servicios, redes y volúmenes incluidos. 
+- Se ha añadido un fichero de variables de entorno aparte `.env.stack`
+- Adicionalmente también se ha creado un script como seeders para que el sistema ya se levante con algún dato en base de datos, se lanza desde el entrypoint `docker-entrypoint-initdb.d/`
+- Se han añadido los archivos `Dockerfile` y `.dockerignore` al dotnet-stack.
+- Se ha modificado los ficheros de `Startup.cs` y `appsettings.json` para que puedan mostrar logs en el servicio del back.
+- Para Nginx se ha añadido su fichero de configuración `nginx.conf`.
+
+Stack levantado:
+
+![Stack_con_nginx](./images/Stack_con_nginx.png)
+
+Comando utilizado para levantar el stack:
+```bash
+docker compose -f compose.stack.yml --env-file .env.stack up -d
+```
+
+Acceso al sistema desde el puerto 80 y 8080, en la imagen se muestra el del puerto 8080:
+
+![Levantado_en_puertos_80_8080](./images/Levantado_en_puertos_80_8080.png)
+
+Comprobamos que al hacer peticiones a los 2 puertos los back-end están procesando las peticiones, se adjunta la imagen del back de dotnet que era el nuevo que hemos añadido para este reto:
+
+![Peticiones_a_dotnet](./images/Peticiones_a_dotnet.png)
+
+Con esto ya tendríamos nuestro stack montado con todos los stacks funcionando.
+
 **Nota 1**: Nunca subiría archivos con variables de entorno a ningún sitio, solo las he dejado en este repositorio con fines educativos.
 
 **Nota 2**: He intentando a veces mostrar comandos por consola y otras veces directamente imágenes de Docker Desktop para que hubiera un poco de todo.
@@ -218,19 +248,3 @@ docker compose down -v
 **Nota 3**: Si haber entregado estos ejercicios significa ya no volver a asistir a tus clases Gis, entonces haz como que no he entregado nada.
 
 ![Meme_MenInBlack](./memes/forget-never-happened.gif)
-
-Apartado personal para ver que implementar aquí:
-- Podemos meter un nginx que actue como un proxy inverso para montar los 2 stacks a la vez.
-- Como hacer peticiones al back: Curl, Postman, directamente con consultas en mongo.
-- Me gustaría utilizar Tableplus.
-- ¿Donde están las variables de entorno en el back de .net?
-- Prueba a mapear los mismos puertos en el front y en el back y explica porque puedes hacerlo funcionar.
-- Estaría bien crear unos scripts de copia de bases de datos, back ups, esto solo por la ciencia.
-- ¿Utilizamos mongo express?
-- Utiliza la propiedad "healthcheck" con el compose para ver como funciona.
-- Averigua como crear seeders en base de datos.
-- Averigua donde guarda un contenedor MongoDB la información de la bd.
-- Levanta dev container para el stack de .net.
-- El contenedor de  dotnet: 
-  - https://hub.docker.com/r/microsoft/dotnet-sdk
-  - https://mcr.microsoft.com/en-us/artifact/mar/dotnet/sdk/tag/8.0-alpine

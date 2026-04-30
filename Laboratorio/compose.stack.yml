@@ -1,0 +1,85 @@
+services:
+  mongodb:
+    image: mongo:8.0
+    container_name: mongodb
+    networks:
+      - lemoncode-network
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    volumes:
+      - mongo-data:/data/db
+      - ./seeders/seeders.js:/docker-entrypoint-initdb.d/seeder.js:ro
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  node-api:
+    build: ./node-stack/backend
+    container_name: node-api
+    networks:
+      - lemoncode-network
+    environment:
+      DATABASE_URL: mongodb://${MONGO_USER}:${MONGO_PASSWORD}@mongodb:27017
+      DATABASE_NAME: ${NODE_DB_NAME}
+      PORT: ${NODE_BACKEND_PORT}
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
+  dotnet-api:
+    build: ./dotnet-stack/backend
+    container_name: dotnet-api
+    networks:
+      - lemoncode-network
+    environment:
+      ASPNETCORE_URLS: http://+:${DOTNET_BACKEND_PORT}
+      ClassDatabaseSettings__ConnectionString: mongodb://${MONGO_USER}:${MONGO_PASSWORD}@mongodb:27017
+      ClassDatabaseSettings__DatabaseName: ${DOTNET_DB_NAME}
+      ClassDatabaseSettings__ClassesCollectionName: Classes
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
+  lemoncode-frontend-node:
+    build: ./node-stack/frontend
+    container_name: lemoncode-frontend-node
+    networks:
+      - lemoncode-network
+    environment:
+      API_URL: http://node-api:${NODE_BACKEND_PORT}/api/classes
+    depends_on:
+      - node-api
+
+  lemoncode-frontend-dotnet:
+    build: ./dotnet-stack/frontend
+    container_name: lemoncode-frontend-dotnet
+    networks:
+      - lemoncode-network
+    environment:
+      API_URL: http://dotnet-api:${DOTNET_BACKEND_PORT}/api/classes
+    depends_on:
+      - dotnet-api
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    networks:
+      - lemoncode-network
+    ports:
+      - "${NGINX_PORT_NODE}:80"
+      - "${NGINX_PORT_DOTNET}:8080"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - lemoncode-frontend-node
+      - lemoncode-frontend-dotnet
+
+networks:
+  lemoncode-network:
+    driver: bridge
+
+volumes:
+  mongo-data:
